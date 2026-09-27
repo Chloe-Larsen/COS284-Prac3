@@ -2,15 +2,15 @@ section .text
 global total_pages
 
 total_pages:
-    xor eax, eax
+    xor eax, eax ; sum = 0
     test rsi, rsi
     jle .done
-    mov rcx, rsi
+    mov rcx, rsi ; rcx = counter = n
 .loop
-    movsxd r8, dword [rdi + 16]
-    add rax, r8
-    add rdi, 24
-    dec rcx
-    jnz .loop
+    movsxd r8, dword [rdi + 16] ; books[i] pages
+    add rax, r8 ; sum
+    add rdi, 24 ; books++
+    dec rcx ; counter --
+    jnz .loop ; id counter != 0
 .done
-    ret
+    ret ; go back to main
