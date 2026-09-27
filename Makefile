@@ -1,34 +1,32 @@
-# Makefile for COS284 Assembly Practical 1
+# Makefile for COS284 Assembly Practical 3
 
 ASM      = yasm
 ASMFLAGS = -f elf64 -g dwarf2
-LINKER   = ld
+
 TARGETS  = task1 task2 task3 task4 task5
+OBJECTS  = $(TARGETS:=.o)
 SOURCES  = $(TARGETS:=.asm)
 
-.PHONY: all clean run-all zip
+# Your C harness + any test data
+HARNESS  = main.c
+PROGRAM  = library
 
-all: $(TARGETS)
+.PHONY: all clean run zip
 
-task%: task%.o
-	$(LINKER) -o $@ $^
+all: $(OBJECTS)
 
-task%.o: task%.asm
+%.o: %.asm
 	$(ASM) $(ASMFLAGS) -o $@ $<
 
-run%: task%
-	./$<
+# Build a local test executable (gcc, NOT ld)
+$(PROGRAM): $(OBJECTS) $(HARNESS)
+	gcc -o $@ $(HARNESS) $(OBJECTS)
 
-run-all: $(TARGETS)
-	@for t in $(TARGETS); do \
-		echo "=== Running $$t ==="; \
-		./$$t; \
-		echo; \
-	done
+run: $(PROGRAM)
+	./$(PROGRAM)
 
-# Create submission zip
 zip: clean
 	zip u25004141.zip $(SOURCES)
 
 clean:
-	rm -f $(TARGETS) u25004141.zip
+	rm -f $(OBJECTS) $(PROGRAM) u25004141.zip
